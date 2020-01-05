@@ -1,3 +1,3 @@
 ```shell
-archivemail --copy -v -d3600 -o $HOME/mail_archive imaps://616545598:password@imap.qq.com/INBOX
+python archivemail.py --copy -v -d3600 -o $HOME/mail_archive imaps://616545598:password@imap.qq.com/INBOX
 ```

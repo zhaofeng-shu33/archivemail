@@ -29,8 +29,6 @@ if __name__ == '__main__':
     dic = {}
     for message in m:
         mfrom = message.get_from()
-        suffix = mfrom.split(' ')[0].split('@')[1]
-        # get the sender email
         decoded_content = decode_header(mfrom)[0]
         if decoded_content[1] is not None:
             mfrom = decoded_content[0].decode(decoded_content[1])

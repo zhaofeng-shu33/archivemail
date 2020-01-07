@@ -1,3 +1,4 @@
+#!/bin/python3
 import os
 import argparse
 
@@ -5,10 +6,10 @@ import mailbox
 import email
 from email.header import decode_header
 
-import pdb
-
 def write_to_dist(dic):
    # create directory and file name
+   if not os.path.exists('maildir'):
+        os.mkdir('maildir')
    for k, v in dic.items():
         if not os.path.exists(k):
             os.mkdir(os.path.join('maildir', k))
@@ -21,7 +22,7 @@ def write_to_dist(dic):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dry-run', const=True, nargs='?', default=False)
+    parser.add_argument('--dry-run', const=True, nargs='?', default=False, help='does not write to disk')
     args = parser.parse_args()
     m = mailbox.mbox('./mail-inbox')
     c = 0
@@ -29,8 +30,10 @@ if __name__ == '__main__':
     for message in m:
         mfrom = message.get_from()
         suffix = mfrom.split(' ')[0].split('@')[1]
-        # decode header first
-        mfrom = decode_header(mfrom)[0][0].decode('utf-8')
+        # get the sender email
+        decoded_content = decode_header(mfrom)[0]
+        if decoded_content[1] is not None:
+            mfrom = decoded_content[0].decode(decoded_content[1])
         suffix = mfrom.split(' ')[0].split('@')[1]
         if dic.get(suffix) is None:
             dic[suffix] = []

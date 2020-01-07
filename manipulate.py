@@ -14,18 +14,16 @@ def write_to_dist(dic):
         if not os.path.exists(k):
             os.mkdir(os.path.join('maildir', k))
         for name in v:
-            try:
-                f = open(os.path.join('maildir', k, name), 'w')
-                f.close()
-            except Exception:
-                pdb.set_trace()
+            f = open(os.path.join('maildir', k, name), 'w')
+            f.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dry-run', const=True, nargs='?', default=False, help='does not write to disk')
+    parser.add_argument('--dry-run', const=True,
+        nargs='?', default=False, help='does not write to disk')
     args = parser.parse_args()
     m = mailbox.mbox('./mail-inbox')
-    c = 0
+    message_count = 0
     dic = {}
     for message in m:
         mfrom = message.get_from()
@@ -48,10 +46,10 @@ if __name__ == '__main__':
             elif decoded_content[1] is not None:
                 subject_decoded = decoded_content[0].decode(decoded_content[1])
         if len(subject_decoded) == 0:
-            subject_decoded = 'Untitled%d' % c
+            subject_decoded = 'Untitled%d' % message_count
         subject_decoded = subject_decoded.replace('/', '').replace(' ', '_')
         dic[suffix].append(subject_decoded)
-        c += 1
+        message_count += 1
 
     if not args.dry_run:
         write_to_dist(dic)

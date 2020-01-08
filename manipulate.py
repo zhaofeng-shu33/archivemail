@@ -1,31 +1,33 @@
 #!/bin/python3
+# pylint: disable=missing-module-docstring
 import os
 import argparse
 
 import mailbox
-import email
 from email.header import decode_header
 
-def write_to_dist(dic):
-   # create directory and file name
-   if not os.path.exists('maildir'):
+def write_to_disk(dic_obj):
+    '''write archive results
+    '''
+    # create directory and file name
+    if not os.path.exists('maildir'):
         os.mkdir('maildir')
-   for k, v in dic.items():
-        if not os.path.exists(k):
-            os.mkdir(os.path.join('maildir', k))
-        for name in v:
-            f = open(os.path.join('maildir', k, name), 'w')
-            f.close()
+    for key, value in dic_obj.items():
+        if not os.path.exists(key):
+            os.mkdir(os.path.join('maildir', key))
+        for name in value:
+            file_obj = open(os.path.join('maildir', key, name), 'w')
+            file_obj.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', const=True,
-        nargs='?', default=False, help='does not write to disk')
+                        nargs='?', default=False, help='does not write to disk')
     args = parser.parse_args()
-    m = mailbox.mbox('./mail-inbox')
+    mailbox_instance = mailbox.mbox('./mail-inbox')
     message_count = 0
     dic = {}
-    for message in m:
+    for message in mailbox_instance:
         mfrom = message.get_from()
         decoded_content = decode_header(mfrom)[0]
         if decoded_content[1] is not None:
@@ -41,7 +43,7 @@ if __name__ == '__main__':
             if decoded_content[1] == 'unknown-8bit':
                 try:
                     subject_decoded = decoded_content[0].decode('gb2312')
-                except:
+                except UnicodeDecodeError:
                     subject_decoded = decoded_content[0].decode('utf-8')
             elif decoded_content[1] is not None:
                 subject_decoded = decoded_content[0].decode(decoded_content[1])
@@ -52,4 +54,4 @@ if __name__ == '__main__':
         message_count += 1
 
     if not args.dry_run:
-        write_to_dist(dic)
+        write_to_disk(dic)

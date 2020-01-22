@@ -15,3 +15,6 @@ python archivemail.py --copy -v -d3600 -o $HOME/mail_archive imaps://616545598:p
 ossutil64 cp -r maildir oss://undergraduate/maildir/
 ```
    Uploading to Baidu NetDisk is also a good choice.
+
+Use `offlineimap` (python2 interpreter) to download all mails from IMAP server and use `mutt` console client program to
+read the archived mail. That is `mail -f /home/feng/imap-maildir/INBOX/`

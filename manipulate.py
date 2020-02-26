@@ -2,8 +2,6 @@
 # pylint: disable=missing-module-docstring
 import os
 import argparse
-import time
-import pdb
 
 import mailbox
 from email.header import decode_header
@@ -35,8 +33,6 @@ def get_decode_content(message):
         except:
             try:
                 _contents = _contents.decode('gbk')
-            except:
-                pdb.set_trace()
     else:
         try:
             _contents = _contents.decode(charset)
@@ -47,7 +43,8 @@ def get_decode_content(message):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', const=True,
-        nargs='?', default=False, help='does not write to disk')
+                        nargs='?', default=False,
+                        help='does not write to disk')
 
     args = parser.parse_args()
     m = mailbox.Maildir('INBOX')
@@ -70,8 +67,6 @@ if __name__ == '__main__':
                     subject_decoded = decoded_content[0].decode('utf-8')
             elif decoded_content[1] is not None:
                 subject_decoded = decoded_content[0].decode(decoded_content[1])
-        if len(subject_decoded) == 0:
-            subject_decoded = 'Untitled%d' % message_count
         subject_decoded = subject_decoded.replace('/', '').replace(' ', '_')
         dic['subject'] = subject_decoded
         dic['time'] = message.get('date')
@@ -91,4 +86,4 @@ if __name__ == '__main__':
         dic['content'] = contents
         if not args.dry_run:
             write_dic(dic)
-        
+ 

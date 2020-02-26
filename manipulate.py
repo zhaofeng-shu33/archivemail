@@ -30,8 +30,18 @@ def get_decode_content(message):
     _contents = message.get_payload(decode=True)
     charset = message.get_content_charset()
     if charset is None:
-        charset = 'utf-8'
-        _contents = _contents.decode(charset)
+        try:
+            _contents = _contents.decode('utf-8')
+        except:
+            try:
+                _contents = _contents.decode('gbk')
+            except:
+                pdb.set_trace()
+    else:
+        try:
+            _contents = _contents.decode(charset)
+        except:
+            _contents = _contents.decode('gbk')
     return _contents
 
 if __name__ == '__main__':
@@ -75,7 +85,7 @@ if __name__ == '__main__':
                         if subpart.get_content_type() == 'text/plain':
                             contents += get_decode_content(subpart) + '\n'
                 elif part.get_content_type() == 'text/plain':
-                    contents += get_decode_content(subpart) + '\n'
+                    contents += get_decode_content(part) + '\n'
         elif message.get_content_type() == 'text/plain':
             contents += get_decode_content(message) + '\n'
         dic['content'] = contents

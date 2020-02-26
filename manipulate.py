@@ -6,26 +6,19 @@ import mailbox
 import email
 from email.header import decode_header
 
-def write_to_dist(dic):
-   # create directory and file name
-   if not os.path.exists('maildir'):
-        os.mkdir('maildir')
-   for k, v in dic.items():
-        if not os.path.exists(k):
-            os.mkdir(os.path.join('maildir', k))
-        for name in v:
-            f = open(os.path.join('maildir', k, name), 'w')
-            f.close()
+OUTPUT_DIR = 'read'
+def write_dic(dic):
+    return
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', const=True,
         nargs='?', default=False, help='does not write to disk')
     args = parser.parse_args()
-    m = mailbox.mbox('./mail-inbox')
+    m = mailbox.Maildir('INBOX')
     message_count = 0
-    dic = {}
     for message in m:
+        dic = {}
         mfrom = message.get_from()
         decoded_content = decode_header(mfrom)[0]
         if decoded_content[1] is not None:
@@ -51,5 +44,5 @@ if __name__ == '__main__':
         dic[suffix].append(subject_decoded)
         message_count += 1
 
-    if not args.dry_run:
-        write_to_dist(dic)
+        if not args.dry_run:
+            write_dic(dic)

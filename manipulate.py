@@ -1,11 +1,11 @@
 #!/bin/python3
+# pylint: disable=missing-module-docstring
 import os
 import argparse
 import time
 import pdb
 
 import mailbox
-import email
 from email.header import decode_header
 from email.utils import parsedate
 
@@ -66,7 +66,7 @@ if __name__ == '__main__':
             if decoded_content[1] == 'unknown-8bit':
                 try:
                     subject_decoded = decoded_content[0].decode('gb2312')
-                except:
+                except UnicodeDecodeError:
                     subject_decoded = decoded_content[0].decode('utf-8')
             elif decoded_content[1] is not None:
                 subject_decoded = decoded_content[0].decode(decoded_content[1])

@@ -26,6 +26,14 @@ def write_dic(dic):
         f.write(content_all)
     return
 
+def get_decode_content(message):
+    _contents = message.get_payload(decode=True)
+    charset = message.get_content_charset()
+    if charset is None:
+        charset = 'utf-8'
+        _contents = _contents.decode(charset)
+    return _contents
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', const=True,
@@ -59,14 +67,17 @@ if __name__ == '__main__':
         dic['time'] = message.get('date')
         if dic['time'] is None:
             dic['time'] = message.get('Received').split(';')[-1]
-        if message.get_content_type() == 'text/plain':
-            contents = message.get_payload(decode=True)
-            charset = message.get_content_charset()
-            if charset is None:
-                charset = 'utf-8'
-            contents = contents.decode(charset)
-        else:
-            contents = ''
+        contents = ''
+        if message.is_multipart():
+            for part in message.walk():
+                if part.is_multipart():
+                    for subpart in part.walk():
+                        if subpart.get_content_type() == 'text/plain':
+                            contents += get_decode_content(subpart) + '\n'
+                elif part.get_content_type() == 'text/plain':
+                    contents += get_decode_content(subpart) + '\n'
+        elif message.get_content_type() == 'text/plain':
+            contents += get_decode_content(message) + '\n'
         dic['content'] = contents
         if not args.dry_run:
             write_dic(dic)

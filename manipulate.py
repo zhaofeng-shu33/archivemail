@@ -2,6 +2,7 @@
 import os
 import argparse
 import time
+import pdb
 
 import mailbox
 import email
@@ -56,6 +57,8 @@ if __name__ == '__main__':
         subject_decoded = subject_decoded.replace('/', '').replace(' ', '_')
         dic['subject'] = subject_decoded
         dic['time'] = message.get('date')
+        if dic['time'] is None:
+            dic['time'] = message.get('Received').split(';')[-1]
         if message.get_content_type() == 'text/plain':
             contents = message.get_payload(decode=True)
             charset = message.get_content_charset()

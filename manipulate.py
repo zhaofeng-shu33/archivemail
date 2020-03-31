@@ -34,7 +34,11 @@ def get_decode_content(_message):
         try:
             _contents = _contents.decode(charset)
         except UnicodeDecodeError:
-            _contents = _contents.decode('gbk')
+            try:
+                _contents = _contents.decode('gbk')
+            except:
+                _contents = _contents.decode(charset,
+                    errors='ignore')
     return _contents
 
 if __name__ == '__main__':

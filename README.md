@@ -8,7 +8,7 @@ Steps:
 
 3. Uploading to your private file storage server, for example oss:
 ```shell
-ossutil64 cp -r maildir oss://undergraduate/maildir/
+ossutil64 cp -rf read oss://undergraduate/maildir/
 ```
    Uploading to Baidu NetDisk is also a good choice.
 

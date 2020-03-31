@@ -42,9 +42,9 @@ if __name__ == '__main__':
     parser.add_argument('--dry-run', const=True,
                         nargs='?', default=False,
                         help='does not write to disk')
-
+    parser.add_argument('--maildir_name', default='INBOX')
     args = parser.parse_args()
-    m = mailbox.Maildir('INBOX')
+    m = mailbox.Maildir(args.maildir_name)
     for message in m:
         dic = {}
         mfrom = message.get('from')

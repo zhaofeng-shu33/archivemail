@@ -76,7 +76,11 @@ if __name__ == '__main__':
         dic['subject'] = subject_decoded
         dic['time'] = message.get('date')
         if dic['time'] is None:
-            dic['time'] = message.get('Received').split(';')[-1]
+            if message.get('Received') is not None:
+                dic['time'] = message.get('Received').split(';')[-1]
+            else:
+                # mail from 10000@qq.com
+                continue
         contents = ''
         if message.is_multipart():
             for part in message.walk():

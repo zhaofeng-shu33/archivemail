@@ -49,6 +49,10 @@ def decode_wrapper(content, method):
             subject_decoded = content.decode('utf-8')
     elif method is not None:
             subject_decoded = content.decode(method)
+    elif type(content) is str:
+        subject_decoded = content
+    else:
+        subject_decoded = content.decode('utf-8')
     return subject_decoded
 
 if __name__ == '__main__':
@@ -67,7 +71,7 @@ if __name__ == '__main__':
             mfrom = decode_wrapper(decoded_content[0], decoded_content[1])
         dic['from'] = mfrom
         subject_decoded = message['subject']
-        if subject_decoded is None:
+        if subject_decoded is None or subject_decoded == '':
             subject_decoded = 'Untitled'
         else:
             decoded_content = decode_header(subject_decoded)[0]

@@ -18,7 +18,7 @@ def write_dic(_dic):
     file_name = str_tim + '_' + _dic['subject'] + '.md'
     content_all = _dic['subject'] + '\n\n'
     content_all += _dic['from'] + '\n\n'
-    content_all += _dic['content']
+    content_all += _dic['content'].replace('&nbsp;', ' ')
     with open(os.path.join(OUTPUT_DIR, year, file_name), 'w') as f:
         f.write(content_all)
 
@@ -40,6 +40,16 @@ def get_decode_content(_message):
                 _contents = _contents.decode(charset,
                     errors='ignore')
     return _contents
+def decode_wrapper(content, method):
+    subject_decoded = ''
+    if method == 'unknown-8bit':
+        try:
+            subject_decoded = content.decode('gb2312')
+        except UnicodeDecodeError:
+            subject_decoded = content.decode('utf-8')
+    elif method is not None:
+            subject_decoded = content.decode(method)
+    return subject_decoded
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -54,20 +64,14 @@ if __name__ == '__main__':
         mfrom = message.get('from')
         decoded_content = decode_header(mfrom)[0]
         if decoded_content[1] is not None:
-            mfrom = decoded_content[0].decode(decoded_content[1])
+            mfrom = decode_wrapper(decoded_content[0], decoded_content[1])
         dic['from'] = mfrom
         subject_decoded = message['subject']
         if subject_decoded is None:
             subject_decoded = 'Untitled'
         else:
             decoded_content = decode_header(subject_decoded)[0]
-            if decoded_content[1] == 'unknown-8bit':
-                try:
-                    subject_decoded = decoded_content[0].decode('gb2312')
-                except UnicodeDecodeError:
-                    subject_decoded = decoded_content[0].decode('utf-8')
-            elif decoded_content[1] is not None:
-                subject_decoded = decoded_content[0].decode(decoded_content[1])
+            subject_decoded = decode_wrapper(decoded_content[0], decoded_content[1])
         subject_decoded = subject_decoded.replace('/', '').replace(' ', '_')
         dic['subject'] = subject_decoded
         dic['time'] = message.get('date')

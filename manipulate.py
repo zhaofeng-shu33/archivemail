@@ -88,6 +88,8 @@ if __name__ == '__main__':
         contents = ''
         if message.is_multipart():
             for part in message.walk():
+                if type(part) is mailbox.MaildirMessage:
+                    continue
                 if part.is_multipart():
                     for subpart in part.walk():
                         if subpart.get_content_type() == 'text/plain':

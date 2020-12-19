@@ -3,6 +3,10 @@
 Steps:
 1. First you need to download mails using `offlineimap` with python2 interpreter.
 
+```shell
+../offlineimap/bin/offlineimap -f "Sent Items"
+```
+
 2. Then run `python3 manipulate.py` to generate readable mails in file systems. The `manipulate.py` only extracts plain text mail content from `INBOX`.
 
 

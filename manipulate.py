@@ -72,8 +72,13 @@ if __name__ == '__main__':
             mfrom = decode_wrapper(decoded_content[0], decoded_content[1])
         dic['from'] = mfrom
         mto = message.get('to')
-        decoded_content = decode_header(mto)[-1]
-        dic['to'] = decode_wrapper(decoded_content[0], decoded_content[1])
+        if type(mto) is str:
+            dic['to'] = mto
+        elif mto is None:
+            dic['to'] = ''
+        else:
+            decoded_content = decode_header(mto)[-1]
+            dic['to'] = decode_wrapper(decoded_content[0], decoded_content[1])
         subject_decoded = message['subject']
         if subject_decoded is None or subject_decoded == '':
             subject_decoded = 'Untitled'

@@ -18,6 +18,7 @@ def write_dic(_dic):
     file_name = str_tim + '_' + _dic['subject'] + '.md'
     content_all = _dic['subject'] + '\n\n'
     content_all += _dic['from'] + '\n\n'
+    content_all += _dic['to'] + '\n\n'
     content_all += _dic['content'].replace('&nbsp;', ' ')
     with open(os.path.join(OUTPUT_DIR, year, file_name), 'w') as f:
         f.write(content_all)
@@ -70,6 +71,9 @@ if __name__ == '__main__':
         if decoded_content[1] is not None:
             mfrom = decode_wrapper(decoded_content[0], decoded_content[1])
         dic['from'] = mfrom
+        mto = message.get('to')
+        decoded_content = decode_header(mto)[-1]
+        dic['to'] = decode_wrapper(decoded_content[0], decoded_content[1])
         subject_decoded = message['subject']
         if subject_decoded is None or subject_decoded == '':
             subject_decoded = 'Untitled'

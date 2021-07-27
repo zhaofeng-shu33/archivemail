@@ -1,12 +1,13 @@
 #!/bin/python3
 import os
 import argparse
-
+import re
 import mailbox
 from email.header import decode_header
 from email.utils import parsedate
 
 OUTPUT_DIR = 'read'
+p = re.compile('[\\/:?*?<>|]+')
 def write_dic(_dic):
     tuple_obj = parsedate(_dic['time'])
     year = str(tuple_obj[0])
@@ -16,6 +17,7 @@ def write_dic(_dic):
         os.mkdir(os.path.join(OUTPUT_DIR, year))
     str_tim = '%s-%d-%d' % (year, month, day)
     file_name = str_tim + '_' + _dic['subject'] + '.md'
+    file_name = re.sub(p, '_', file_name)
     content_all = _dic['subject'] + '\n\n'
     content_all += _dic['from'] + '\n\n'
     content_all += _dic['to'] + '\n\n'

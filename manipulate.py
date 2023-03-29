@@ -8,14 +8,18 @@ from email.utils import parsedate
 
 OUTPUT_DIR = 'read'
 p = re.compile('[\\/:?*?<>|]+')
-def write_dic(_dic):
-    tuple_obj = parsedate(_dic['time'])
+def get_time_str(email_time):
+    tuple_obj = parsedate(email_time)
     year = str(tuple_obj[0])
     month = tuple_obj[1]
-    day = tuple_obj[2]
+    day = tuple_obj[2]    
+    str_time = '%s-%d-%d' % (year, month, day)
+    return (str_time, year)
+ 
+def write_dic(_dic):
+    str_tim, year = get_time_str(_dic['time'])
     if not os.path.exists(os.path.join(OUTPUT_DIR, year)):
         os.mkdir(os.path.join(OUTPUT_DIR, year))
-    str_tim = '%s-%d-%d' % (year, month, day)
     file_name = str_tim + '_' + _dic['subject'] + '.md'
     file_name = re.sub(p, '_', file_name)
     content_all = _dic['subject'] + '\n\n'
@@ -58,6 +62,13 @@ def decode_wrapper(content, method):
         subject_decoded = content.decode('utf-8')
     return subject_decoded
 
+def add_content(mess, _set):
+    _len = len(_set)
+    _set.add(mess)
+    if len(_set) == _len:
+        return ''
+    return mess + '\n'
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry-run', const=True,
@@ -97,6 +108,11 @@ if __name__ == '__main__':
                 # mail from 10000@qq.com
                 continue
         contents = ''
+        _set = set()
+        #str_time, _ = get_time_str(dic['time'])
+        #if str_time == '2022-3-7':
+        #    import pdb
+        #    pdb.set_trace()
         if message.is_multipart():
             for part in message.walk():
                 if type(part) is mailbox.MaildirMessage:
@@ -104,11 +120,11 @@ if __name__ == '__main__':
                 if part.is_multipart():
                     for subpart in part.walk():
                         if subpart.get_content_type() == 'text/plain':
-                            contents += get_decode_content(subpart) + '\n'
+                            contents += add_content(get_decode_content(subpart), _set) 
                 elif part.get_content_type() == 'text/plain':
-                    contents += get_decode_content(part) + '\n'
+                    contents += add_content(get_decode_content(part), _set)
         elif message.get_content_type() == 'text/plain':
-            contents += get_decode_content(message) + '\n'
+            contents += add_content(get_decode_content(message), _set)
         dic['content'] = contents
         if not args.dry_run:
             write_dic(dic)
